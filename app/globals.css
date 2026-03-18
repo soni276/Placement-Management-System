@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  /* Light purple theme with glow */
+  --bg-primary: #f5f3ff;
+  --bg-secondary: #ede9fe;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --border: #ddd6fe;
+  --border-strong: #c4b5fd;
+  --text-primary: #4c1d95;
+  --text-secondary: #6d28d9;
+  --text-muted: #7c3aed;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-light: #a78bfa;
+  --glow: 0 0 20px rgba(124, 58, 237, 0.3);
+  --glow-strong: 0 0 30px rgba(124, 58, 237, 0.5);
+  --shadow-card: 0 4px 14px rgba(124, 58, 237, 0.08);
+  --gradient-purple: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+}
+
+@layer base {
+  html {
+    overflow-x: hidden;
+  }
+  body {
+    @apply antialiased;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Glowing elements */
+.glow-card {
+  box-shadow: var(--glow), var(--shadow-card);
+  border: 1px solid var(--border);
+}
+.glow-card:hover {
+  box-shadow: var(--glow-strong), var(--shadow-card);
+}
+.glow-btn {
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+}
+.glow-btn:hover {
+  box-shadow: 0 0 25px rgba(124, 58, 237, 0.6);
+}
+.glow-nav {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
+}
+.glow-text {
+  text-shadow: 0 0 20px rgba(124, 58, 237, 0.6);
+}
+
+/* Animated gradient bg */
+.animate-gradient {
+  background: linear-gradient(-45deg, #f5f3ff, #ede9fe, #ddd6fe, #c4b5fd);
+  background-size: 400% 400%;
+  animation: gradient-shift 8s ease infinite;
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pulse glow */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(124, 58, 237, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(124, 58, 237, 0.5); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

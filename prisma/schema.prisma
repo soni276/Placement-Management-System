@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id           Int       @id @default(autoincrement())
+  regNo        String    @unique @map("reg_no")
+  name         String
+  email        String    @unique
+  phone        String?
+  passwordHash String    @map("password_hash")
+  branch       String
+  cgpa         Float
+  passoutYear  Int       @map("passout_year")
+  resumePath   String?   @map("resume_path")
+  createdAt    DateTime? @default(now()) @map("created_at")
+
+  applications   Application[]
+  interviews     Interview[]
+  feedbacks      InterviewFeedback[]
+  schedules      InterviewSchedule[]
+
+  @@map("students")
+}
+
+model Admin {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  passwordHash String    @map("password_hash")
+  name         String
+  createdAt    DateTime? @default(now()) @map("created_at")
+
+  @@map("admins")
+}
+
+model Company {
+  id                  Int       @id @default(autoincrement())
+  name                String
+  roleTitle           String    @map("role_title")
+  description         String?  @db.Text
+  ctc                 Float
+  location            String?
+  cgpaCutoff          Float     @map("cgpa_cutoff")
+  eligibleBranches    String    @map("eligible_branches")
+  applicationDeadline DateTime? @map("application_deadline")
+  createdAt           DateTime? @default(now()) @map("created_at")
+
+  applications Application[]
+  interviews   Interview[]
+  panels       InterviewPanel[]
+  schedules    InterviewSchedule[]
+  feedbacks    InterviewFeedback[]
+
+  @@map("companies")
+}
+
+model Application {
+  id             Int       @id @default(autoincrement())
+  studentId      Int       @map("student_id")
+  companyId      Int       @map("company_id")
+  status         String    @default("applied")
+  interviewScore Float?    @map("interview_score")
+  appliedAt      DateTime  @default(now()) @map("applied_at")
+  updatedAt      DateTime? @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, companyId])
+  @@map("applications")
+}
+
+model Interview {
+  id         Int       @id @default(autoincrement()) @map("interview_id")
+  studentId  Int       @map("student_id")
+  companyId  Int       @map("company_id")
+  date       DateTime  @db.Date @map("interview_date")
+  time       String    @map("interview_time")
+  mode       String    @map("interview_mode")
+  link       String?   @map("interview_link")
+  status     String    @default("Scheduled")
+  createdAt  DateTime? @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("interviews")
+}
+
+model InterviewPanel {
+  id              Int       @id @default(autoincrement()) @map("panel_id")
+  companyId       Int       @map("company_id")
+  panelName       String    @map("panel_name")
+  interviewerName String    @map("interviewer_name")
+  createdAt       DateTime? @default(now()) @map("created_at")
+
+  company   Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  schedules InterviewSchedule[]
+
+  @@map("interview_panels")
+}
+
+model InterviewSchedule {
+  id          Int       @id @default(autoincrement()) @map("schedule_id")
+  candidateId Int       @map("candidate_id")
+  companyId   Int       @map("company_id")
+  panelId     Int       @map("panel_id")
+  date        DateTime  @db.Date @map("interview_date")
+  timeSlot    String    @map("time_slot")
+  meetingLink String?   @map("meeting_link")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  student Student        @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  company Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  panel   InterviewPanel @relation(fields: [panelId], references: [id], onDelete: Cascade)
+
+  @@map("interview_schedule")
+}
+
+model InterviewFeedback {
+  id                  Int       @id @default(autoincrement()) @map("feedback_id")
+  studentId           Int       @map("student_id")
+  companyId           Int       @map("company_id")
+  technicalScore      Int?      @map("technical_score")
+  communicationScore Int?      @map("communication_score")
+  problemSolvingScore Int?      @map("problem_solving_score")
+  interviewScore      Int?      @map("interview_score")
+  improvementAreas    String?   @map("improvement_areas")
+  comments            String?
+  decision            String
+  createdAt           DateTime? @default(now()) @map("created_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("interview_feedback")
+}
+
+model Notification {
+  id        Int       @id @default(autoincrement()) @map("notification_id")
+  userType  String    @map("user_type")
+  userId    Int       @map("user_id")
+  message   String
+  status    String    @default("unread")
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
+
+model Message {
+  id          Int       @id @default(autoincrement()) @map("message_id")
+  senderId    Int       @map("sender_id")
+  senderRole  String    @map("sender_role")
+  receiverId  Int       @map("receiver_id")
+  messageText String    @map("message_text")
+  createdAt   DateTime? @default(now()) @map("timestamp")
+
+  @@map("messages")
+}
